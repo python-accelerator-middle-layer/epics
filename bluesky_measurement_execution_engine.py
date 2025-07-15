@@ -22,9 +22,14 @@ from bluesky import RunEngine
 
 from ophyd_async.core import Device, Signal
 
+from .mexec.master_clock import MasterClock
+from .mexec.multiplexer_for_settable_devices import MultiplexerProxy
+from .mexec.power_converter import PowerConverter
+from .mexec.tunes import Tunes
+from ...core.bl.liasion_translator_setup import load_managers
 from ...core.interfaces.measurement_execution_engine import MeasurementExecutionEngine
 from ...core.model.command import Command
-
+from pyaml.facility_specific_constants import special_pvs
 
 def commands_plan(
     commands: Sequence[Command],
@@ -127,3 +132,27 @@ class BlueskyMeasurementExecutionEngine(MeasurementExecutionEngine):
         )
         (uid,) = self.run_engine(plan)
         return uid
+
+    def setup(self, *args) -> None:
+        """
+        Setup the measurement execution engine
+        """
+        prefix = 'Anonym:'
+        yp, _, __ = load_managers()
+
+        quad_pcs = {name: PowerConverter(f"{prefix}{name}:", name=name, readback_suffix="rdbk", setpoint_suffix="set")
+                    for
+                    name in yp.get("quadrupole_pcs")}
+
+        quadrupoles = MultiplexerProxy(name="quad_col", settable_devices=quad_pcs, default_name=list(quad_pcs)[0])
+
+        master_clock = MasterClock(f'{prefix}{special_pvs["master_clock"]}', name="mc")
+        tunes = Tunes(f"{prefix}beam:twiss", name="tune")
+
+        async def connect():
+            await tunes.connect()
+            r = await tunes.read()
+
+        return dict(
+            master_clock=master_clock, quadrupole_pcs=quadrupoles, tunes=tunes
+        )
