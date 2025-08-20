@@ -13,6 +13,7 @@ Missing features:
 
 """
 import functools
+import os
 from dataclasses import asdict
 from typing import Sequence, Dict
 
@@ -136,8 +137,11 @@ class BlueskyMeasurementExecutionEngine(MeasurementExecutionEngine):
     def setup(self, *args) -> None:
         """
         Setup the measurement execution engine
+
+        Todo:
+            make prefix an overridable variable
         """
-        prefix = 'waheed:'
+        prefix = os.environ.get("USER", 'Anonym') + ":"
         yp, _, __ = load_managers()
 
         quad_pcs = {name: PowerConverter(f"{prefix}{name}:", name=name, readback_suffix="rdbk", setpoint_suffix="set")
@@ -147,7 +151,7 @@ class BlueskyMeasurementExecutionEngine(MeasurementExecutionEngine):
         quadrupoles = MultiplexerProxy(name="quad_col", settable_devices=quad_pcs, default_name=list(quad_pcs)[0])
 
         master_clock = MasterClock(f'{prefix}{special_pvs["master_clock"]}', name="mc")
-        tunes = Tunes(f"{prefix}beam:twiss", name="tune")
+        tunes = Tunes(f"{prefix}TUNECC", name="tune")
 
         async def connect():
             await tunes.connect()
