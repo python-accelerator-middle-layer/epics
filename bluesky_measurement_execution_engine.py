@@ -32,11 +32,13 @@ from ...core.interfaces.measurement_execution_engine import MeasurementExecution
 from ...core.model.command import Command
 from accml.facility_specific_constants import special_pvs
 
+
 def commands_plan(
     commands: Sequence[Command],
     detectors: Sequence[Device],
     actuators: Dict[str, Device],
     info_signals: Dict[str, Signal],
+    repeat_readings: int = 1,
 ):
     """
 
@@ -72,7 +74,7 @@ def commands_plan(
         # yield from bps.sleep(2.0)
         yield from bps.repeat(
             functools.partial(bps.trigger_and_read, all_dev),
-            num=1
+            num=repeat_readings,
         )
 
 
@@ -81,14 +83,13 @@ def commands_execution_plan(
     detectors: Sequence[Device],
     actuators: Dict[str, Device],
     info_signals: Dict[str, Signal],
+    repeat_readings: int,
     md: None,
 ):
     """Translate commands to bluesky run-engine messages"""
     _md = md or dict()
     # CommandSequence nor Commands is json seriazable ....
-    _md.update(
-        dict(commands=[asdict(cmd) for cmd in commands])
-    )
+    _md.update(dict(commands=[asdict(cmd) for cmd in commands]))
 
     @bpp.stage_decorator(list(detectors) + list(actuators.values()))
     @bpp.run_decorator(md=_md)
@@ -98,6 +99,7 @@ def commands_execution_plan(
             detectors=detectors,
             actuators=actuators,
             info_signals=info_signals,
+            repeat_readings=repeat_readings,
         )
         return r
 
@@ -119,6 +121,7 @@ class BlueskyMeasurementExecutionEngine(MeasurementExecutionEngine):
     def execute(
         self,
         commands_collection: Sequence[Sequence[Command]],
+        repeat_readings: int,
         detectors: Sequence[Device],
         actuators: Dict[str, Device],
         info_signals: Dict[str, Signal],
@@ -129,6 +132,7 @@ class BlueskyMeasurementExecutionEngine(MeasurementExecutionEngine):
             detectors=detectors,
             actuators=actuators,
             info_signals=info_signals,
+            repeat_readings=repeat_readings,
             md=md,
         )
         (uid,) = self.run_engine(plan)
@@ -141,14 +145,22 @@ class BlueskyMeasurementExecutionEngine(MeasurementExecutionEngine):
         Todo:
             make prefix an overridable variable
         """
-        prefix = os.environ.get("USER", 'Anonym') + ":"
+        prefix = os.environ.get("USER", "Anonym") + ":"
         yp, _, __ = load_managers()
 
-        quad_pcs = {name: PowerConverter(f"{prefix}{name}:", name=name, readback_suffix="rdbk", setpoint_suffix="set")
-                    for
-                    name in yp.get("quadrupole_pcs")}
+        quad_pcs = {
+            name: PowerConverter(
+                f"{prefix}{name}:",
+                name=name,
+                readback_suffix="rdbk",
+                setpoint_suffix="set",
+            )
+            for name in yp.get("quadrupole_pcs")
+        }
 
-        quadrupoles = MultiplexerProxy(name="quad_col", settable_devices=quad_pcs, default_name=list(quad_pcs)[0])
+        quadrupoles = MultiplexerProxy(
+            name="quad_col", settable_devices=quad_pcs, default_name=list(quad_pcs)[0]
+        )
 
         master_clock = MasterClock(f'{prefix}{special_pvs["master_clock"]}', name="mc")
         tunes = Tunes(f"{prefix}TUNECC", name="tune")
@@ -157,6 +169,4 @@ class BlueskyMeasurementExecutionEngine(MeasurementExecutionEngine):
             await tunes.connect()
             r = await tunes.read()
 
-        return dict(
-            master_clock=master_clock, quadrupole_pcs=quadrupoles, tunes=tunes
-        )
+        return dict(master_clock=master_clock, quadrupole_pcs=quadrupoles, tunes=tunes)
