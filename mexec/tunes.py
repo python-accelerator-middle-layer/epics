@@ -10,7 +10,7 @@ from .utils import wait_for_new_value
 class TuneSignal(StandardReadable):
     def __init__(self, prefix, *, name: str):
         with self.add_children_as_readables():
-            self.sig = epics_signal_r(float, f"{prefix}:tune")
+            self.sig = epics_signal_r(float, f"{prefix}")
         super().__init__(name=name)
 
     @AsyncStatus.wrap
