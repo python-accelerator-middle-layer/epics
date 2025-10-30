@@ -4,7 +4,7 @@ from bluesky.protocols import Reading
 from ophyd_async.core import StandardReadable, AsyncStatus
 from ophyd_async.epics.core import epics_signal_r
 
-from .utils import wait_for_new_value
+from accml.core.utils.ophyd_async.new_value import wait_for_new_value
 
 
 class TuneSignal(StandardReadable):

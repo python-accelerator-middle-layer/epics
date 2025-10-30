@@ -3,7 +3,7 @@ from typing import List
 from accml.core.utils.ophyd_async.pv_positioner_like_utils import PVPositionerIsClose
 
 
-from .diff_channel import DiffChannel
+from accml.core.utils.ophyd_async.diff_channel import DiffChannel
 from ophyd_async.core import StandardReadable
 
 
