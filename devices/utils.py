@@ -1,6 +1,8 @@
 from ophyd_async.epics.core import epics_signal_rw, epics_signal_r
 
-from accml.core.utils.ophyd_async.pv_positioner_like_utils import _SettableControllingDifference
+from accml.core.utils.ophyd_async.pv_positioner_like_utils import (
+    _SettableControllingDifference,
+)
 
 
 class PVPositionerIsClose(_SettableControllingDifference):
@@ -20,10 +22,10 @@ class PVPositionerIsClose(_SettableControllingDifference):
         with self.add_children_as_readables():
             # Todo: add hints
             # fmt:off
-            self.setpoint  = epics_signal_rw ( float , f"ca://{prefix}{setpoint_suffix}"     , name="set"  )
-            self.readback  = epics_signal_r  ( float , f"ca://{prefix}{readback_suffix}"     , name="rdbk" )
-            self.units     = epics_signal_r  ( str   , f"ca://{prefix}{readback_suffix}.EGU",  name="units")
-            self.precision = epics_signal_r  ( int   , f"ca://{prefix}{readback_suffix}.PREC", name="prec" )
+            self.setpoint  = epics_signal_rw ( float , f"ca://{prefix}{setpoint_suffix}"     , name="set"  ) # noqa
+            self.readback  = epics_signal_r  ( float , f"ca://{prefix}{readback_suffix}"     , name="rdbk" ) # noqa
+            self.units     = epics_signal_r  ( str   , f"ca://{prefix}{readback_suffix}.EGU",  name="units") # noqa
+            self.precision = epics_signal_r  ( int   , f"ca://{prefix}{readback_suffix}.PREC", name="prec" ) # noqa
             # fmt:on
 
         super().__init__(name=name, **kwargs)
