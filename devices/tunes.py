@@ -1,5 +1,3 @@
-import time
-
 from bluesky.protocols import Reading
 from ophyd_async.core import StandardReadable, AsyncStatus
 from ophyd_async.epics.core import epics_signal_r
