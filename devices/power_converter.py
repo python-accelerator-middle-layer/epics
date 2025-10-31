@@ -1,6 +1,6 @@
 from accml.core.utils.ophyd_async.diff_channel import DiffChannel
 from accml.core.utils.ophyd_async.multiplexer_for_settable_devices import _MultiplexerItemProxy
-from accml.core.utils.ophyd_async.pv_positioner_like_utils import PVPositionerIsClose
+from accml.custom.epics.devices.utils import PVPositionerIsClose
 
 
 class MultiplexerItemProxy(_MultiplexerItemProxy):
