@@ -25,7 +25,8 @@ from ophyd_async.core import Device, Signal
 
 from ...core.interfaces.devices_facade import DevicesFacade
 from ...core.interfaces.measurement_execution_engine import MeasurementExecutionEngine
-from ...core.model.command import Command
+from ...core.model.command import Command, TransactionCommand, ReadCommand
+
 
 def commands_plan(
     commands: Sequence[Command],
@@ -113,16 +114,16 @@ class BlueskyMeasurementExecutionEngine(MeasurementExecutionEngine):
 
     def execute(
         self,
-        commands_collection: Sequence[Sequence[Command]],
-        detectors: Sequence[Device],
-        actuators: Dict[str, Device],
+        commands_collection: Sequence[TransactionCommand],
+        detectors: Sequence[ReadCommand],
+        # actuators: Dict[str, Device],
         info_signals: Dict[str, Signal],
         md: Dict[str, object],
     ) -> str:
         plan = commands_execution_plan(
             commands=commands_collection,
             detectors=detectors,
-            actuators=actuators,
+            # actuators=actuators,
             info_signals=info_signals,
             md=md,
         )
