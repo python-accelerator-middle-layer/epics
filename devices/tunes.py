@@ -31,9 +31,10 @@ class TunesTransversal(StandardReadable):
     async def describe(self) -> dict[str, DataKey]:
         tmp = await super().describe()
         d = {
-            self.name: dict(shape=[2], dtype="array", source=""),
+             self.name: dict(shape=[], dtype="array", source=""),
         }
-        return {**tmp, **d}
+        r = {**tmp, **d}
+        return r
 
     @AsyncStatus.wrap
     async def read(self) -> dict[str, Reading]:
@@ -52,7 +53,8 @@ class TunesTransversal(StandardReadable):
                 alarm_severity=severity
             )
         }
-        return {**tmp, **d}
+        r =  {**tmp, **d}
+        return r
 
 
 class Tunes(StandardReadable):
