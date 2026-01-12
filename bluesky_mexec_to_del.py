@@ -101,7 +101,7 @@ def commands_execution_plan(
 
 
 class BlueskyMeasurementExecutionEngine(MeasurementExecutionEngine):
-    """Demonstrator of a measurement engine as a bluesky runengine"""
+    """Demonstrator of a measurement engine as a bluesky run engine"""
 
     def __init__(self, run_engine: RunEngine):
         """
