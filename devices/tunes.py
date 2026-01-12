@@ -18,14 +18,15 @@ class TuneSignal(StandardReadable):
 
     @AsyncStatus.wrap
     async def read(self) -> dict[str, Reading]:
-        await wait_for_new_value(self.sig, timeout=5)
+        #: on real machine timeout of 5 was too small
+        await wait_for_new_value(self.sig, timeout=8)
         return await super().read()
 
 class TunesTransversal(StandardReadable):
     def __init__(self, prefix, *, name):
         with self.add_children_as_readables():
-            self.x = TuneSignal(f"{prefix}:x", name=f"{name}-x")
-            self.y = TuneSignal(f"{prefix}:y", name=f"{name}-y")
+            self.x = TuneSignal(f"{prefix}:rdH", name=f"{name}-x")
+            self.y = TuneSignal(f"{prefix}:rdV", name=f"{name}-y")
         super().__init__(name=name)
 
     async def describe(self) -> dict[str, DataKey]:
