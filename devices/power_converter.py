@@ -1,5 +1,6 @@
-from accml.core.utils.ophyd_async.diff_channel import DiffChannel
-from accml.core.utils.ophyd_async.multiplexer_for_settable_devices import _MultiplexerItemProxy
+from accml.core.utils.ophyd_async.multiplexer_for_settable_devices import (
+    _MultiplexerItemProxy,
+)
 from accml.custom.epics.devices.utils import PVPositionerIsClose
 
 
@@ -7,6 +8,8 @@ class MultiplexerItemProxy(_MultiplexerItemProxy):
     """
     Todo:
         need to provide difference current
+
+        I guess it can be removed as delta_backend handles this part already
     """
 
     pass
@@ -14,8 +17,9 @@ class MultiplexerItemProxy(_MultiplexerItemProxy):
 
 class PowerConverter(PVPositionerIsClose):
     def __init__(self, *args, **kwargs):
-        with self.add_children_as_readables():
-            self.delta_set_current = DiffChannel(
-                parent=self, name=f"{kwargs['name']}-diff-current"
-            )
         super().__init__(*args, **kwargs)
+
+    def __getattr__(self, item):
+        if item == "set_current":
+            return self.setpoint
+        raise AssertionError("don't know how to handle set point", item)
