@@ -8,8 +8,8 @@ from event_model import DataKey
 from ophyd_async.core import StandardReadable, AsyncStatus
 from ophyd_async.epics.core import epics_signal_r
 
-from accml.app.tune.model import Tune
 from accml.core.utils.ophyd_async.new_value import wait_for_new_value
+from accml_lib.core.model.tune import Tune
 
 
 class TuneSignal(StandardReadable):
