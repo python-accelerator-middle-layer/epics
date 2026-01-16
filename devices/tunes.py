@@ -28,10 +28,8 @@ class TuneSignal(StandardReadable):
 class TunesTransversal(StandardReadable):
     def __init__(self, prefix, *, name):
         with self.add_children_as_readables():
-            # self.x = TuneSignal(f"{prefix}:rdH", name=f"{name}-x")
-            # self.y = TuneSignal(f"{prefix}:rdV", name=f"{name}-y")
-            self.x = TuneSignal(f"{prefix}:x", name=f"{name}-x")
-            self.y = TuneSignal(f"{prefix}:y", name=f"{name}-y")
+            self.x = TuneSignal(f"{prefix}:rdH", name=f"{name}-x")
+            self.y = TuneSignal(f"{prefix}:rdV", name=f"{name}-y")
         super().__init__(name=name)
 
     async def describe(self) -> dict[str, DataKey]:
