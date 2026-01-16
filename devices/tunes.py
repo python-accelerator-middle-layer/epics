@@ -8,8 +8,8 @@ from event_model import DataKey
 from ophyd_async.core import StandardReadable, AsyncStatus
 from ophyd_async.epics.core import epics_signal_r
 
-from accml.app.tune.model import Tune
 from accml.core.utils.ophyd_async.new_value import wait_for_new_value
+from accml_lib.core.model.tune import Tune
 
 
 class TuneSignal(StandardReadable):
@@ -28,10 +28,8 @@ class TuneSignal(StandardReadable):
 class TunesTransversal(StandardReadable):
     def __init__(self, prefix, *, name):
         with self.add_children_as_readables():
-            # self.x = TuneSignal(f"{prefix}:rdH", name=f"{name}-x")
-            # self.y = TuneSignal(f"{prefix}:rdV", name=f"{name}-y")
-            self.x = TuneSignal(f"{prefix}:x", name=f"{name}-x")
-            self.y = TuneSignal(f"{prefix}:y", name=f"{name}-y")
+            self.x = TuneSignal(f"{prefix}:rdH", name=f"{name}-x")
+            self.y = TuneSignal(f"{prefix}:rdV", name=f"{name}-y")
         super().__init__(name=name)
 
     async def describe(self) -> dict[str, DataKey]:
