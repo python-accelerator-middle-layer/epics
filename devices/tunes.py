@@ -9,7 +9,7 @@ from ophyd_async.core import StandardReadable, AsyncStatus
 from ophyd_async.epics.core import epics_signal_r
 
 from accml.core.utils.ophyd_async.new_value import wait_for_new_value
-from accml_lib.core.model.tune import Tune
+from accml_lib.core.model.output.tune import Tune
 
 
 class TuneSignal(StandardReadable):
