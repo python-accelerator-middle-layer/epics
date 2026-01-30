@@ -21,7 +21,7 @@ class TuneSignal(StandardReadable):
     @AsyncStatus.wrap
     async def read(self) -> dict[str, Reading]:
         #: on real machine timeout of 5 was too small
-        await wait_for_new_value(self.sig, timeout=8)
+        await wait_for_new_value(self.sig, timeout=16)
         return await super().read()
 
 
