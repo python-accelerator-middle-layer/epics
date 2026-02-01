@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from typing import Annotated as A, Sequence, Dict
 
 import numpy as np
