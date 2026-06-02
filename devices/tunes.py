@@ -2,6 +2,8 @@
 Todo:
     fix device names as soon as BESSY II twin matches the machine names
 """
+import asyncio
+
 import jsons
 from bluesky.protocols import Reading
 from event_model import DataKey
@@ -18,11 +20,18 @@ class TuneSignal(StandardReadable):
             self.sig = epics_signal_r(float, f"{prefix}")
         super().__init__(name=name)
 
-    @AsyncStatus.wrap
     async def read(self) -> dict[str, Reading]:
-        #: on real machine timeout of 5 was too small
-        await wait_for_new_value(self.sig, timeout=16)
-        return await super().read()
+         # give the twin a chance to compute
+         # normally I prefer to wait that new data has arrived
+         #
+         await asyncio.sleep(0.5)
+
+         #: on real machine timeout of 5 was too small
+         # I can only wait for new data if the twin
+         # periodically updates its data
+         # await wait_for_new_value(self.sig, timeout=16)
+         r = await super().read()
+         return r
 
 
 class TunesTransversal(StandardReadable):
@@ -40,7 +49,6 @@ class TunesTransversal(StandardReadable):
         r = {**tmp, **d}
         return r
 
-    @AsyncStatus.wrap
     async def read(self) -> dict[str, Reading]:
         tmp = await super().read()
         x = tmp[f"{self.name}-x-sig"]
